@@ -1,0 +1,17 @@
+{
+  "annotations": {
+    "changelogDate": "20231212220722"
+  },
+  "applications": "*",
+  "entityTableName": "inventory",
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "Inventory",
+  "relationships": [],
+  "searchEngine": "no"
+}

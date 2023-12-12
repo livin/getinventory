@@ -1,0 +1,28 @@
+{
+  "annotations": {
+    "changelogDate": "20231212220822"
+  },
+  "applications": "*",
+  "entityTableName": "reservation",
+  "fields": [
+    {
+      "fieldName": "reservedBy",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "reservedAt",
+      "fieldType": "Instant"
+    }
+  ],
+  "name": "Reservation",
+  "relationships": [
+    {
+      "otherEntityName": "inventory",
+      "relationshipName": "inventory",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
+    }
+  ],
+  "searchEngine": "no"
+}

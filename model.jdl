@@ -1,0 +1,12 @@
+entity Inventory {
+    name String required
+}
+
+entity Reservation {
+    reservedBy String required
+    reservedAt Instant
+}
+
+relationship OneToOne {
+    Reservation{inventory} to Inventory
+}
