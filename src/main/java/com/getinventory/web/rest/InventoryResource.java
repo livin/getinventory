@@ -73,6 +73,7 @@ public class InventoryResource {
      * or with status {@code 500 (Internal Server Error)} if the inventory couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Inventory> updateInventory(
         @PathVariable(value = "id", required = false) final Long id,
