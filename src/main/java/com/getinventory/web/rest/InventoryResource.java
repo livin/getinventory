@@ -109,6 +109,7 @@ public class InventoryResource {
      * or with status {@code 500 (Internal Server Error)} if the inventory couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<Inventory> partialUpdateInventory(
         @PathVariable(value = "id", required = false) final Long id,
@@ -181,6 +182,7 @@ public class InventoryResource {
      * @param id the id of the inventory to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteInventory(@PathVariable("id") Long id) {
         log.debug("REST request to delete Inventory : {}", id);
