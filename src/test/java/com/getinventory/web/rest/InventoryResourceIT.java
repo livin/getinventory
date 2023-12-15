@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.getinventory.IntegrationTest;
 import com.getinventory.domain.Inventory;
 import com.getinventory.repository.InventoryRepository;
+import com.getinventory.web.rest.mockusers.WithAdminUser;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Random;
@@ -27,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @IntegrationTest
 @AutoConfigureMockMvc
-@WithMockUser
+@WithAdminUser
 class InventoryResourceIT {
 
     private static final String DEFAULT_NAME = "AAAAAAAAAA";
@@ -100,6 +101,20 @@ class InventoryResourceIT {
 
     @Test
     @Transactional
+    @WithMockUser
+    void createInventoryByUserIsProhibited() throws Exception {
+        restInventoryMockMvc
+            .perform(
+                post(ENTITY_API_URL)
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(inventory))
+            )
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Transactional
     void createInventoryWithExistingId() throws Exception {
         // Create the Inventory with an existing ID
         inventory.setId(1L);
@@ -145,6 +160,7 @@ class InventoryResourceIT {
 
     @Test
     @Transactional
+    @WithMockUser
     void getAllInventories() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
@@ -160,6 +176,7 @@ class InventoryResourceIT {
 
     @Test
     @Transactional
+    @WithMockUser
     void getInventory() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
