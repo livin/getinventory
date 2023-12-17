@@ -113,9 +113,6 @@ export const Reservation = () => {
                 <th className="hand" onClick={sort('id')}>
                   ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                 </th>
-                <th className="hand" onClick={sort('reservedBy')}>
-                  Reserved By <FontAwesomeIcon icon={getSortIconByFieldName('reservedBy')} />
-                </th>
                 <th className="hand" onClick={sort('reservedAt')}>
                   Reserved At <FontAwesomeIcon icon={getSortIconByFieldName('reservedAt')} />
                 </th>
@@ -136,7 +133,6 @@ export const Reservation = () => {
                       {reservation.id}
                     </Button>
                   </td>
-                  <td>{reservation.reservedBy}</td>
                   <td>
                     {reservation.reservedAt ? <TextFormat type="date" value={reservation.reservedAt} format={APP_DATE_FORMAT} /> : null}
                   </td>

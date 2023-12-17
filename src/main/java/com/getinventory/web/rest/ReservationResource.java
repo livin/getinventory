@@ -125,9 +125,6 @@ public class ReservationResource {
         Optional<Reservation> result = reservationRepository
             .findById(reservation.getId())
             .map(existingReservation -> {
-                if (reservation.getReservedBy() != null) {
-                    existingReservation.setReservedBy(reservation.getReservedBy());
-                }
                 if (reservation.getReservedAt() != null) {
                     existingReservation.setReservedAt(reservation.getReservedAt());
                 }

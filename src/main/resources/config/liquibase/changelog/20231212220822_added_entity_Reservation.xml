@@ -14,9 +14,6 @@
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="reserved_by" type="varchar(255)">
-                <constraints nullable="false" />
-            </column>
             <column name="reserved_at" type="${datetimeType}">
                 <constraints nullable="true" />
             </column>
@@ -48,7 +45,6 @@
                   tableName="reservation"
                   usePreparedStatements="true">
             <column name="id" type="numeric"/>
-            <column name="reserved_by" type="string"/>
             <column name="reserved_at" type="date"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>

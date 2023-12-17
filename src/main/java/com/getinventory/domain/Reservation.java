@@ -25,10 +25,6 @@ public class Reservation implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @NotNull
-    @Column(name = "reserved_by", nullable = false)
-    private String reservedBy;
-
     @Column(name = "reserved_at")
     private Instant reservedAt;
 
@@ -37,8 +33,7 @@ public class Reservation implements Serializable {
     @JoinColumn(unique = true)
     private Inventory inventory;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(unique = true)
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -54,19 +49,6 @@ public class Reservation implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getReservedBy() {
-        return this.reservedBy;
-    }
-
-    public Reservation reservedBy(String reservedBy) {
-        this.setReservedBy(reservedBy);
-        return this;
-    }
-
-    public void setReservedBy(String reservedBy) {
-        this.reservedBy = reservedBy;
     }
 
     public Instant getReservedAt() {
@@ -132,7 +114,6 @@ public class Reservation implements Serializable {
     public String toString() {
         return "Reservation{" +
             "id=" + getId() +
-            ", reservedBy='" + getReservedBy() + "'" +
             ", reservedAt='" + getReservedAt() + "'" +
             "}";
     }

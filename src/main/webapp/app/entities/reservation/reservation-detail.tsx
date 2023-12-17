@@ -29,10 +29,6 @@ export const ReservationDetail = () => {
           </dt>
           <dd>{reservationEntity.id}</dd>
           <dt>
-            <span id="reservedBy">Reserved By</span>
-          </dt>
-          <dd>{reservationEntity.reservedBy}</dd>
-          <dt>
             <span id="reservedAt">Reserved At</span>
           </dt>
           <dd>

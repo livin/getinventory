@@ -4,7 +4,6 @@ import { IUser } from 'app/shared/model/user.model';
 
 export interface IReservation {
   id?: number;
-  reservedBy?: string;
   reservedAt?: dayjs.Dayjs | null;
   inventory?: IInventory | null;
   user?: IUser | null;

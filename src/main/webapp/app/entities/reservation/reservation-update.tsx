@@ -101,16 +101,6 @@ export const ReservationUpdate = () => {
             <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
               {!isNew ? <ValidatedField name="id" required readOnly id="reservation-id" label="ID" validate={{ required: true }} /> : null}
               <ValidatedField
-                label="Reserved By"
-                id="reservation-reservedBy"
-                name="reservedBy"
-                data-cy="reservedBy"
-                type="text"
-                validate={{
-                  required: { value: true, message: 'This field is required.' },
-                }}
-              />
-              <ValidatedField
                 label="Reserved At"
                 id="reservation-reservedAt"
                 name="reservedAt"

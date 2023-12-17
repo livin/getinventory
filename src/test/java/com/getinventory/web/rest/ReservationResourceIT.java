@@ -62,7 +62,7 @@ class ReservationResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Reservation createEntity(EntityManager em) {
-        Reservation reservation = new Reservation().reservedBy(DEFAULT_RESERVED_BY).reservedAt(DEFAULT_RESERVED_AT);
+        Reservation reservation = new Reservation().reservedAt(DEFAULT_RESERVED_AT);
         return reservation;
     }
 
@@ -73,7 +73,7 @@ class ReservationResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Reservation createUpdatedEntity(EntityManager em) {
-        Reservation reservation = new Reservation().reservedBy(UPDATED_RESERVED_BY).reservedAt(UPDATED_RESERVED_AT);
+        Reservation reservation = new Reservation().reservedAt(UPDATED_RESERVED_AT);
         return reservation;
     }
 
@@ -100,7 +100,6 @@ class ReservationResourceIT {
         List<Reservation> reservationList = reservationRepository.findAll();
         assertThat(reservationList).hasSize(databaseSizeBeforeCreate + 1);
         Reservation testReservation = reservationList.get(reservationList.size() - 1);
-        assertThat(testReservation.getReservedBy()).isEqualTo(DEFAULT_RESERVED_BY);
         assertThat(testReservation.getReservedAt()).isEqualTo(DEFAULT_RESERVED_AT);
     }
 
@@ -125,28 +124,6 @@ class ReservationResourceIT {
         // Validate the Reservation in the database
         List<Reservation> reservationList = reservationRepository.findAll();
         assertThat(reservationList).hasSize(databaseSizeBeforeCreate);
-    }
-
-    @Test
-    @Transactional
-    void checkReservedByIsRequired() throws Exception {
-        int databaseSizeBeforeTest = reservationRepository.findAll().size();
-        // set the field null
-        reservation.setReservedBy(null);
-
-        // Create the Reservation, which fails.
-
-        restReservationMockMvc
-            .perform(
-                post(ENTITY_API_URL)
-                    .with(csrf())
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(TestUtil.convertObjectToJsonBytes(reservation))
-            )
-            .andExpect(status().isBadRequest());
-
-        List<Reservation> reservationList = reservationRepository.findAll();
-        assertThat(reservationList).hasSize(databaseSizeBeforeTest);
     }
 
     @Test
@@ -200,7 +177,7 @@ class ReservationResourceIT {
         Reservation updatedReservation = reservationRepository.findById(reservation.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedReservation are not directly saved in db
         em.detach(updatedReservation);
-        updatedReservation.reservedBy(UPDATED_RESERVED_BY).reservedAt(UPDATED_RESERVED_AT);
+        updatedReservation.reservedAt(UPDATED_RESERVED_AT);
 
         restReservationMockMvc
             .perform(
@@ -215,7 +192,6 @@ class ReservationResourceIT {
         List<Reservation> reservationList = reservationRepository.findAll();
         assertThat(reservationList).hasSize(databaseSizeBeforeUpdate);
         Reservation testReservation = reservationList.get(reservationList.size() - 1);
-        assertThat(testReservation.getReservedBy()).isEqualTo(UPDATED_RESERVED_BY);
         assertThat(testReservation.getReservedAt()).isEqualTo(UPDATED_RESERVED_AT);
     }
 
@@ -294,7 +270,7 @@ class ReservationResourceIT {
         Reservation partialUpdatedReservation = new Reservation();
         partialUpdatedReservation.setId(reservation.getId());
 
-        partialUpdatedReservation.reservedBy(UPDATED_RESERVED_BY).reservedAt(UPDATED_RESERVED_AT);
+        partialUpdatedReservation.reservedAt(UPDATED_RESERVED_AT);
 
         restReservationMockMvc
             .perform(
@@ -309,7 +285,6 @@ class ReservationResourceIT {
         List<Reservation> reservationList = reservationRepository.findAll();
         assertThat(reservationList).hasSize(databaseSizeBeforeUpdate);
         Reservation testReservation = reservationList.get(reservationList.size() - 1);
-        assertThat(testReservation.getReservedBy()).isEqualTo(UPDATED_RESERVED_BY);
         assertThat(testReservation.getReservedAt()).isEqualTo(UPDATED_RESERVED_AT);
     }
 
@@ -325,7 +300,7 @@ class ReservationResourceIT {
         Reservation partialUpdatedReservation = new Reservation();
         partialUpdatedReservation.setId(reservation.getId());
 
-        partialUpdatedReservation.reservedBy(UPDATED_RESERVED_BY).reservedAt(UPDATED_RESERVED_AT);
+        partialUpdatedReservation.reservedAt(UPDATED_RESERVED_AT);
 
         restReservationMockMvc
             .perform(
@@ -340,7 +315,6 @@ class ReservationResourceIT {
         List<Reservation> reservationList = reservationRepository.findAll();
         assertThat(reservationList).hasSize(databaseSizeBeforeUpdate);
         Reservation testReservation = reservationList.get(reservationList.size() - 1);
-        assertThat(testReservation.getReservedBy()).isEqualTo(UPDATED_RESERVED_BY);
         assertThat(testReservation.getReservedAt()).isEqualTo(UPDATED_RESERVED_AT);
     }
 
