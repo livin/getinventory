@@ -40,6 +40,8 @@ export const ReservationDetail = () => {
           </dd>
           <dt>Inventory</dt>
           <dd>{reservationEntity.inventory ? reservationEntity.inventory.id : ''}</dd>
+          <dt>User</dt>
+          <dd>{reservationEntity.user ? reservationEntity.user.id : ''}</dd>
         </dl>
         <Button tag={Link} to="/reservation" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

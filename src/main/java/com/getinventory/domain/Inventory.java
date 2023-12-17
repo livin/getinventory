@@ -28,7 +28,7 @@ public class Inventory implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @JsonIgnoreProperties(value = { "inventory" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "inventory", "user" }, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "inventory")
     private Reservation reservation;
 

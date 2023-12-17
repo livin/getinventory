@@ -37,6 +37,10 @@ public class Reservation implements Serializable {
     @JoinColumn(unique = true)
     private Inventory inventory;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(unique = true)
+    private User user;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public Long getId() {
@@ -88,6 +92,19 @@ public class Reservation implements Serializable {
 
     public Reservation inventory(Inventory inventory) {
         this.setInventory(inventory);
+        return this;
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Reservation user(User user) {
+        this.setUser(user);
         return this;
     }
 

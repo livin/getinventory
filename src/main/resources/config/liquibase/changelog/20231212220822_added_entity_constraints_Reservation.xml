@@ -14,5 +14,12 @@
                                  referencedColumnNames="id"
                                  referencedTableName="inventory"
                                  />
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="reservation"
+                                 constraintName="fk_reservation__user_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="jhi_user"
+                                 />
     </changeSet>
 </databaseChangeLog>

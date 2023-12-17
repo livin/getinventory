@@ -22,6 +22,15 @@
       "relationshipName": "inventory",
       "relationshipSide": "left",
       "relationshipType": "one-to-one"
+    },
+    {
+      "id": false,
+      "otherEntityField": "id",
+      "otherEntityName": "user",
+      "otherEntityRelationshipName": "reservation",
+      "relationshipName": "user",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
     }
   ],
   "searchEngine": "no"

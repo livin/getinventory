@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button, Table } from 'reactstrap';
-import { Translate, TextFormat, getSortState } from 'react-jhipster';
+import { getSortState, TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
-import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
-import { ASC, DESC, SORT } from 'app/shared/util/pagination.constants';
+import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
+import { APP_DATE_FORMAT } from 'app/config/constants';
+import { ASC, DESC } from 'app/shared/util/pagination.constants';
 import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntities } from './reservation.reducer';
 import { getEntities as getInventories } from './../inventory/inventory.reducer';
+import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
 import { IInventory } from 'app/shared/model/inventory.model';
+import { IUser } from 'app/shared/model/user.model';
 
 export const Reservation = () => {
   const dispatch = useAppDispatch();
@@ -25,20 +27,18 @@ export const Reservation = () => {
   const loading = useAppSelector(state => state.reservation.loading);
 
   const inventoryList = useAppSelector(state => state.inventory.entities);
+  const users = useAppSelector(state => state.userManagement.users);
 
   const getAllEntities = () => {
+    // load dependents
+    dispatch(getInventories({}));
+    dispatch(getUsers({}));
+
     dispatch(
       getEntities({
         sort: `${sortState.sort},${sortState.order}`,
       }),
     );
-
-    // load up inventories too
-    dispatch(getInventories({}));
-  };
-
-  const getInventory = (id: any): IInventory => {
-    return inventoryList.find(el => el.id === id);
   };
 
   const sortEntities = () => {
@@ -75,6 +75,22 @@ export const Reservation = () => {
     }
   };
 
+  function getInventory(reservation) {
+    return inventoryList.find(it => it.id === reservation.inventory.id);
+  }
+
+  function getInventoryDisplayName(inventory: IInventory) {
+    return inventory.name;
+  }
+
+  function getUser(reservation) {
+    return users.find(it => reservation.user.id === it.id);
+  }
+
+  function getUserDisplayName(user: IUser) {
+    return user.login;
+  }
+
   return (
     <div>
       <h2 id="reservation-heading" data-cy="ReservationHeading">
@@ -90,7 +106,7 @@ export const Reservation = () => {
         </div>
       </h2>
       <div className="table-responsive">
-        {reservationList && reservationList.length > 0 ? (
+        {reservationList && reservationList.length > 0 && inventoryList && inventoryList.length > 0 && users && users.length > 0 ? (
           <Table responsive>
             <thead>
               <tr>
@@ -105,6 +121,9 @@ export const Reservation = () => {
                 </th>
                 <th>
                   Inventory <FontAwesomeIcon icon="sort" />
+                </th>
+                <th>
+                  User <FontAwesomeIcon icon="sort" />
                 </th>
                 <th />
               </tr>
@@ -123,11 +142,12 @@ export const Reservation = () => {
                   </td>
                   <td>
                     {reservation.inventory ? (
-                      <Link to={`/inventory/${reservation.inventory.id}`}>{getInventory(reservation.inventory.id).name}</Link>
+                      <Link to={`/inventory/${reservation.inventory.id}`}>{getInventoryDisplayName(getInventory(reservation))}</Link>
                     ) : (
                       ''
                     )}
                   </td>
+                  <td>{reservation.user ? getUserDisplayName(getUser(reservation)) : ''}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`/reservation/${reservation.id}`} color="info" size="sm" data-cy="entityDetailsButton">

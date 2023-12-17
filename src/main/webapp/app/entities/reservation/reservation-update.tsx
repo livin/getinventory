@@ -10,6 +10,8 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { IInventory } from 'app/shared/model/inventory.model';
 import { getEntities as getInventories } from 'app/entities/inventory/inventory.reducer';
+import { IUser } from 'app/shared/model/user.model';
+import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
 import { IReservation } from 'app/shared/model/reservation.model';
 import { getEntity, updateEntity, createEntity, reset } from './reservation.reducer';
 
@@ -22,6 +24,7 @@ export const ReservationUpdate = () => {
   const isNew = id === undefined;
 
   const inventories = useAppSelector(state => state.inventory.entities);
+  const users = useAppSelector(state => state.userManagement.users);
   const reservationEntity = useAppSelector(state => state.reservation.entity);
   const loading = useAppSelector(state => state.reservation.loading);
   const updating = useAppSelector(state => state.reservation.updating);
@@ -39,6 +42,7 @@ export const ReservationUpdate = () => {
     }
 
     dispatch(getInventories({}));
+    dispatch(getUsers({}));
   }, []);
 
   useEffect(() => {
@@ -58,6 +62,7 @@ export const ReservationUpdate = () => {
       ...reservationEntity,
       ...values,
       inventory: inventories.find(it => it.id.toString() === values.inventory.toString()),
+      user: users.find(it => it.id.toString() === values.user.toString()),
     };
 
     if (isNew) {
@@ -76,6 +81,7 @@ export const ReservationUpdate = () => {
           ...reservationEntity,
           reservedAt: convertDateTimeFromServer(reservationEntity.reservedAt),
           inventory: reservationEntity?.inventory?.id,
+          user: reservationEntity?.user?.id,
         };
 
   return (
@@ -118,6 +124,16 @@ export const ReservationUpdate = () => {
                   ? inventories.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
                         {otherEntity.name}
+                      </option>
+                    ))
+                  : null}
+              </ValidatedField>
+              <ValidatedField id="reservation-user" name="user" data-cy="user" label="User" type="select">
+                <option value="" key="0" />
+                {users
+                  ? users.map(otherEntity => (
+                      <option value={otherEntity.id} key={otherEntity.id}>
+                        {otherEntity.login}
                       </option>
                     ))
                   : null}
