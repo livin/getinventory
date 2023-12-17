@@ -10,6 +10,8 @@ import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntities } from './reservation.reducer';
+import { getEntities as getInventories } from './../inventory/inventory.reducer';
+import { IInventory } from 'app/shared/model/inventory.model';
 
 export const Reservation = () => {
   const dispatch = useAppDispatch();
@@ -22,12 +24,21 @@ export const Reservation = () => {
   const reservationList = useAppSelector(state => state.reservation.entities);
   const loading = useAppSelector(state => state.reservation.loading);
 
+  const inventoryList = useAppSelector(state => state.inventory.entities);
+
   const getAllEntities = () => {
     dispatch(
       getEntities({
         sort: `${sortState.sort},${sortState.order}`,
       }),
     );
+
+    // load up inventories too
+    dispatch(getInventories({}));
+  };
+
+  const getInventory = (id: any): IInventory => {
+    return inventoryList.find(el => el.id == id);
   };
 
   const sortEntities = () => {
@@ -111,7 +122,11 @@ export const Reservation = () => {
                     {reservation.reservedAt ? <TextFormat type="date" value={reservation.reservedAt} format={APP_DATE_FORMAT} /> : null}
                   </td>
                   <td>
-                    {reservation.inventory ? <Link to={`/inventory/${reservation.inventory.id}`}>{reservation.inventory.id}</Link> : ''}
+                    {reservation.inventory ? (
+                      <Link to={`/inventory/${reservation.inventory.id}`}>{getInventory(reservation.inventory.id).name}</Link>
+                    ) : (
+                      ''
+                    )}
                   </td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
