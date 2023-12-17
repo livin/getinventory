@@ -38,7 +38,7 @@ export const Reservation = () => {
   };
 
   const getInventory = (id: any): IInventory => {
-    return inventoryList.find(el => el.id == id);
+    return inventoryList.find(el => el.id === id);
   };
 
   const sortEntities = () => {
