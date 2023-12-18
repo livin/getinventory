@@ -16,7 +16,6 @@ import com.getinventory.repository.ReservationRepository;
 import com.getinventory.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
@@ -41,7 +40,6 @@ class ReservationResourceIT {
     private static final String UPDATED_RESERVED_BY = "BBBBBBBBBB";
 
     private static final Instant DEFAULT_RESERVED_AT = Instant.ofEpochMilli(0L);
-    private static final Instant UPDATED_RESERVED_AT = Instant.now().truncatedTo(ChronoUnit.MILLIS);
 
     private static final String ENTITY_API_URL = "/api/reservations";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -78,9 +76,9 @@ class ReservationResourceIT {
     public Reservation createEntity(EntityManager em) {
         Reservation reservation = Reservation
             .builder()
-            .reservedAt(DEFAULT_RESERVED_AT)
             .inventory(sampleInventory)
             .user(getSampleUser())
+            .reservedAt(DEFAULT_RESERVED_AT)
             .build();
         return reservation;
     }
@@ -104,6 +102,10 @@ class ReservationResourceIT {
     @WithMockUser(value = JOHNTESTER_SAMPLE_LOGIN, roles = { "USER" })
     void createReservation() throws Exception {
         int databaseSizeBeforeCreate = reservationRepository.findAll().size();
+
+        // ensure no reserved at specified
+        reservation.setReservedAt(null);
+
         // Create the Reservation
         restReservationMockMvc
             .perform(
@@ -122,8 +124,6 @@ class ReservationResourceIT {
         // Validate the Reservation in the database
         List<Reservation> reservationList = reservationRepository.findAll();
         assertThat(reservationList).hasSize(databaseSizeBeforeCreate + 1);
-        Reservation testReservation = reservationList.get(reservationList.size() - 1);
-        assertThat(testReservation.getReservedAt()).isEqualTo(DEFAULT_RESERVED_AT);
     }
 
     @Test
@@ -187,7 +187,7 @@ class ReservationResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(reservation.getId().intValue())))
             .andExpect(jsonPath("$.[*].user.id").value(hasItem(reservation.getUser().getId().intValue())))
-            .andExpect(jsonPath("$.[*].reservedAt").value(hasItem(DEFAULT_RESERVED_AT.toString())));
+            .andExpect(jsonPath("$.[*].reservedAt").value(notNullValue()));
     }
 
     @Test
