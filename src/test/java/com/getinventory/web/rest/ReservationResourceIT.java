@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.getinventory.IntegrationTest;
 import com.getinventory.domain.Reservation;
+import com.getinventory.domain.User;
 import com.getinventory.repository.ReservationRepository;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
@@ -62,7 +63,7 @@ class ReservationResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Reservation createEntity(EntityManager em) {
-        Reservation reservation = new Reservation().reservedAt(DEFAULT_RESERVED_AT);
+        Reservation reservation = new Reservation().reservedAt(DEFAULT_RESERVED_AT).user(getSampleUser());
         return reservation;
     }
 
@@ -73,8 +74,13 @@ class ReservationResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Reservation createUpdatedEntity(EntityManager em) {
-        Reservation reservation = new Reservation().reservedAt(UPDATED_RESERVED_AT);
+        Reservation reservation = new Reservation().reservedAt(UPDATED_RESERVED_AT).user(getSampleUser());
+
         return reservation;
+    }
+
+    private static User getSampleUser() {
+        return User.builder().id(2L).login("johntester").build();
     }
 
     @BeforeEach
@@ -138,7 +144,7 @@ class ReservationResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(reservation.getId().intValue())))
-            .andExpect(jsonPath("$.[*].reservedBy").value(hasItem(DEFAULT_RESERVED_BY)))
+            .andExpect(jsonPath("$.[*].user.id").value(hasItem(reservation.getUser().getId().intValue())))
             .andExpect(jsonPath("$.[*].reservedAt").value(hasItem(DEFAULT_RESERVED_AT.toString())));
     }
 
@@ -154,7 +160,7 @@ class ReservationResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(reservation.getId().intValue()))
-            .andExpect(jsonPath("$.reservedBy").value(DEFAULT_RESERVED_BY))
+            .andExpect(jsonPath("$.user.id").value(reservation.getUser().getId()))
             .andExpect(jsonPath("$.reservedAt").value(DEFAULT_RESERVED_AT.toString()));
     }
 
