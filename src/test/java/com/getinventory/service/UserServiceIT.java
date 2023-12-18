@@ -1,6 +1,7 @@
 package com.getinventory.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import com.getinventory.IntegrationTest;
@@ -197,6 +198,12 @@ class UserServiceIT {
         userService.removeNotActivatedUsers();
         Optional<User> maybeDbUser = userRepository.findById(dbUser.getId());
         assertThat(maybeDbUser).contains(dbUser);
+    }
+
+    @Test
+    void ensureTwoSampleTestersExist() {
+        List<User> testers = userRepository.findUsersByLoginContaining("test");
+        assertThat(testers.size()).isEqualTo(2);
     }
 
     private void generateUserToken(User user, String tokenSeries, LocalDate localDate) {
