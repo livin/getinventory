@@ -10,7 +10,6 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,9 +39,15 @@ public class ReservationService {
         if (currentUser.isEmpty()) throw new IllegalStateException("User such login doesn't exist: " + login.get());
 
         if (!Objects.equals(currentUser.get().getId(), reservation.getUser().getId())) throw new BadRequestAlertException(
-            "You can only reserve inventory for yourself",
+            "Reservations can be operated only by owner",
             "reservation",
-            "usermismatch"
+            "user.prohibited"
         );
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        checkUser(reservationRepository.findById(id).orElseThrow());
+        reservationRepository.deleteById(id);
     }
 }

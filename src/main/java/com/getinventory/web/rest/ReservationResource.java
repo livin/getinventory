@@ -97,7 +97,7 @@ public class ReservationResource {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable("id") Long id) {
         log.debug("REST request to delete Reservation : {}", id);
-        reservationRepository.deleteById(id);
+        reservationService.deleteById(id);
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
