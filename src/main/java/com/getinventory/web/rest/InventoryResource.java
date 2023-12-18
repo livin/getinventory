@@ -152,13 +152,6 @@ public class InventoryResource {
      */
     @GetMapping("")
     public List<Inventory> getAllInventories(@RequestParam(name = "filter", required = false) String filter) {
-        if ("reservation-is-null".equals(filter)) {
-            log.debug("REST request to get all Inventorys where reservation is null");
-            return StreamSupport
-                .stream(inventoryRepository.findAll().spliterator(), false)
-                .filter(inventory -> inventory.getReservation() == null)
-                .toList();
-        }
         log.debug("REST request to get all Inventories");
         return inventoryRepository.findAll();
     }
