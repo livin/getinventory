@@ -1,15 +1,19 @@
 package com.getinventory.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * A Inventory.
  */
+@Getter
 @Entity
 @Table(name = "inventory")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -18,50 +22,32 @@ public class Inventory implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
     @Column(name = "id")
     private Long id;
 
+    @Setter
     @NotNull
     @Column(name = "name", nullable = false)
     private String name;
 
-    @JsonIgnoreProperties(value = { "inventory", "user" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "inventory" }, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "inventory")
     private Reservation reservation;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
-
-    public Long getId() {
-        return this.id;
-    }
 
     public Inventory id(Long id) {
         this.setId(id);
         return this;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
     public Inventory name(String name) {
         this.setName(name);
         return this;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Reservation getReservation() {
-        return this.reservation;
     }
 
     public void setReservation(Reservation reservation) {
@@ -77,6 +63,11 @@ public class Inventory implements Serializable {
     public Inventory reservation(Reservation reservation) {
         this.setReservation(reservation);
         return this;
+    }
+
+    @JsonProperty("available")
+    boolean isAvailable() {
+        return getReservation() == null;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
