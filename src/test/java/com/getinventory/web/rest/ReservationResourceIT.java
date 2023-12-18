@@ -2,8 +2,7 @@ package com.getinventory.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -14,11 +13,11 @@ import com.getinventory.domain.Reservation;
 import com.getinventory.domain.User;
 import com.getinventory.repository.InventoryRepository;
 import com.getinventory.repository.ReservationRepository;
+import com.getinventory.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,6 +45,8 @@ class ReservationResourceIT {
 
     private static final String ENTITY_API_URL = "/api/reservations";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+    public static final String JOHNTESTER_SAMPLE_LOGIN = "johntester";
+    public static final String JULIETESTER_SAMPLE_LOGIN = "julietester";
 
     private static Random random = new Random();
     private static AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
@@ -55,6 +56,9 @@ class ReservationResourceIT {
 
     @Autowired
     private InventoryRepository inventoryRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private EntityManager em;
@@ -97,6 +101,7 @@ class ReservationResourceIT {
 
     @Test
     @Transactional
+    @WithMockUser(value = JOHNTESTER_SAMPLE_LOGIN, roles = { "USER" })
     void createReservation() throws Exception {
         int databaseSizeBeforeCreate = reservationRepository.findAll().size();
         // Create the Reservation
@@ -107,13 +112,43 @@ class ReservationResourceIT {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(TestUtil.convertObjectToJsonBytes(reservation))
             )
-            .andExpect(status().isCreated());
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.id").value(notNullValue()))
+            .andExpect(jsonPath("$.reservedAt").value(notNullValue()))
+            .andExpect(jsonPath("$.inventory.id").value(sampleInventory.getId()))
+            .andExpect(jsonPath("$.user.id").value(getSampleUser().getId()));
 
         // Validate the Reservation in the database
         List<Reservation> reservationList = reservationRepository.findAll();
         assertThat(reservationList).hasSize(databaseSizeBeforeCreate + 1);
         Reservation testReservation = reservationList.get(reservationList.size() - 1);
         assertThat(testReservation.getReservedAt()).isEqualTo(DEFAULT_RESERVED_AT);
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(username = JOHNTESTER_SAMPLE_LOGIN, roles = { "USER" })
+    void createReservation_forAnotherUser_prohibited() throws Exception {
+        User anotherTester = userRepository.findOneByLogin(JULIETESTER_SAMPLE_LOGIN).get();
+
+        // tester attempts to reserve for anothertester
+        Reservation reservationForAnotherUser = Reservation
+            .builder()
+            .inventory(sampleInventory)
+            .user(anotherTester)
+            .reservedAt(Instant.now())
+            .build();
+
+        // Create the Reservation
+        restReservationMockMvc
+            .perform(
+                post(ENTITY_API_URL)
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(reservationForAnotherUser))
+            )
+            .andExpect(status().isBadRequest());
     }
 
     @Test

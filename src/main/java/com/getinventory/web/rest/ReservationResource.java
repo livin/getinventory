@@ -1,20 +1,20 @@
 package com.getinventory.web.rest;
 
 import com.getinventory.domain.Reservation;
+import com.getinventory.domain.User;
 import com.getinventory.repository.ReservationRepository;
+import com.getinventory.service.ReservationService;
 import com.getinventory.web.rest.errors.BadRequestAlertException;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
@@ -36,8 +36,11 @@ public class ReservationResource {
 
     private final ReservationRepository reservationRepository;
 
-    public ReservationResource(ReservationRepository reservationRepository) {
+    private final ReservationService reservationService;
+
+    public ReservationResource(ReservationRepository reservationRepository, ReservationService reservationService) {
         this.reservationRepository = reservationRepository;
+        this.reservationService = reservationService;
     }
 
     /**
@@ -48,12 +51,13 @@ public class ReservationResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
-    public ResponseEntity<Reservation> createReservation(@Valid @RequestBody Reservation reservation) throws URISyntaxException {
+    public ResponseEntity<Reservation> createReservation(@Validated({ User.NewUser.class }) @RequestBody Reservation reservation)
+        throws URISyntaxException {
         log.debug("REST request to save Reservation : {}", reservation);
         if (reservation.getId() != null) {
             throw new BadRequestAlertException("A new reservation cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        Reservation result = reservationRepository.save(reservation);
+        Reservation result = reservationService.createReservation(reservation);
         return ResponseEntity
             .created(new URI("/api/reservations/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))

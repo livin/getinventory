@@ -30,15 +30,20 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @AllArgsConstructor
 public class User extends AbstractAuditingEntity<Long> implements Serializable {
 
+    public interface ExistingUser {}
+
+    public interface NewUser {}
+
     private static final long serialVersionUID = 1L;
 
     @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
+    @NotNull(groups = NewUser.class)
     private Long id;
 
-    @NotNull
+    @NotNull(groups = { ExistingUser.class })
     @Pattern(regexp = Constants.LOGIN_REGEX)
     @Size(min = 1, max = 50)
     @Column(length = 50, unique = true, nullable = false)
@@ -46,7 +51,7 @@ public class User extends AbstractAuditingEntity<Long> implements Serializable {
 
     @Setter
     @JsonIgnore
-    @NotNull
+    @NotNull(groups = { ExistingUser.class })
     @Size(min = 60, max = 60)
     @Column(name = "password_hash", length = 60, nullable = false)
     private String password;
@@ -68,7 +73,7 @@ public class User extends AbstractAuditingEntity<Long> implements Serializable {
     private String email;
 
     @Setter
-    @NotNull
+    @NotNull(groups = { ExistingUser.class })
     @Column(nullable = false)
     private boolean activated = false;
 
