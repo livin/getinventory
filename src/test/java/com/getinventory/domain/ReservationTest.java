@@ -22,16 +22,4 @@ class ReservationTest {
         reservation2 = getReservationSample2();
         assertThat(reservation1).isNotEqualTo(reservation2);
     }
-
-    @Test
-    void inventoryTest() throws Exception {
-        Reservation reservation = getReservationRandomSampleGenerator();
-        Inventory inventoryBack = getInventoryRandomSampleGenerator();
-
-        reservation.setInventory(inventoryBack);
-        assertThat(reservation.getInventory()).isEqualTo(inventoryBack);
-
-        reservation.inventory(null);
-        assertThat(reservation.getInventory()).isNull();
-    }
 }

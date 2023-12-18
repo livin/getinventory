@@ -10,17 +10,14 @@ public class ReservationTestSamples {
     private static final AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     public static Reservation getReservationSample1() {
-        var user = new User();
-        user.setId(1L);
-        user.setLogin("tester");
-        return new Reservation().id(1L).user(user);
+        return Reservation.builder().id(1L).user(getSampleUser()).build();
+    }
+
+    private static User getSampleUser() {
+        return User.builder().id(1001L).login("tester").build();
     }
 
     public static Reservation getReservationSample2() {
-        return new Reservation().id(2L);
-    }
-
-    public static Reservation getReservationRandomSampleGenerator() {
-        return new Reservation().id(longCount.incrementAndGet());
+        return Reservation.builder().id(2L).build();
     }
 }

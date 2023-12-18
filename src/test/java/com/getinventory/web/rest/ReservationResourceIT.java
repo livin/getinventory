@@ -2,18 +2,23 @@ package com.getinventory.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.getinventory.IntegrationTest;
+import com.getinventory.domain.Inventory;
 import com.getinventory.domain.Reservation;
 import com.getinventory.domain.User;
+import com.getinventory.repository.InventoryRepository;
 import com.getinventory.repository.ReservationRepository;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,12 +54,16 @@ class ReservationResourceIT {
     private ReservationRepository reservationRepository;
 
     @Autowired
+    private InventoryRepository inventoryRepository;
+
+    @Autowired
     private EntityManager em;
 
     @Autowired
     private MockMvc restReservationMockMvc;
 
     private Reservation reservation;
+    private Inventory sampleInventory;
 
     /**
      * Create an entity for this test.
@@ -62,21 +71,18 @@ class ReservationResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static Reservation createEntity(EntityManager em) {
-        Reservation reservation = new Reservation().reservedAt(DEFAULT_RESERVED_AT).user(getSampleUser());
+    public Reservation createEntity(EntityManager em) {
+        Reservation reservation = Reservation
+            .builder()
+            .reservedAt(DEFAULT_RESERVED_AT)
+            .inventory(sampleInventory)
+            .user(getSampleUser())
+            .build();
         return reservation;
     }
 
-    /**
-     * Create an updated entity for this test.
-     *
-     * This is a static method, as tests for other entities might also need it,
-     * if they test an entity which requires the current entity.
-     */
-    public static Reservation createUpdatedEntity(EntityManager em) {
-        Reservation reservation = new Reservation().reservedAt(UPDATED_RESERVED_AT).user(getSampleUser());
-
-        return reservation;
+    private Inventory createSampleInventory() {
+        return Inventory.builder().id(1005L).name("MacBook Pro").build();
     }
 
     private static User getSampleUser() {
@@ -85,6 +91,7 @@ class ReservationResourceIT {
 
     @BeforeEach
     public void initTest() {
+        sampleInventory = inventoryRepository.saveAndFlush(createSampleInventory());
         reservation = createEntity(em);
     }
 
