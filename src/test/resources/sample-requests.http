@@ -1,0 +1,16 @@
+# Authentication using default security with JSESSIONID
+#
+# For this you'll need JSESSIONID.
+# Login to application through browser.
+# Open web-console and inspect one of the request
+# it will contain JSESSIONID copy it to
+# private environment file then reference as a @no-cookie-jar
+
+### Get all inventries
+GET http://localhost:8080/api/inventories
+Cookie: JSESSIONID={{JSESSIONID}}
+
+### Get all reservatins
+GET http://localhost:8080/api/reservations
+Cookie: JSESSIONID={{JSESSIONID}}
+
