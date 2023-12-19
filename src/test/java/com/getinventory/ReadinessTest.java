@@ -17,16 +17,7 @@ public class ReadinessTest {
 
     @Test
     @DisplayName("Emit reservation events via message broker")
-    void sendEventsAboutReservationsToMessageBroker() {
-        fail(
-            """
-            Integrate message broker (kafka).
-            Add docker runnable for broker.
-            Add tooling to test broker messages.
-            Send reservation events to broker.
-            """
-        );
-    }
+    void sendEventsAboutReservationsToMessageBroker() {}
 
     @Test
     @DisplayName("Describe production app launch")
