@@ -29,12 +29,6 @@ public class ReadinessTest {
     }
 
     @Test
-    @DisplayName("Use JWT Tokens for easy auth by other microservices")
-    void jwtTokens() {
-        fail("Migrate to JWT Token authentication vs default spring security auth");
-    }
-
-    @Test
     @DisplayName("Describe production app launch")
     void prepareProduction() {
         fail("Test production version of app. Write down instructions on how to launch it.");
