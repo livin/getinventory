@@ -5,12 +5,10 @@ import com.getinventory.domain.User;
 import com.getinventory.repository.ReservationRepository;
 import com.getinventory.repository.UserRepository;
 import com.getinventory.security.SecurityUtils;
-import com.getinventory.web.rest.errors.BadRequestAlertException;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +18,7 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
+    private final ReservationEventService reservationEventService;
 
     @Transactional
     public Reservation createReservation(Reservation reservation) {
@@ -27,7 +26,11 @@ public class ReservationService {
 
         reservation.setReservedAt(Instant.now());
 
-        return reservationRepository.save(reservation);
+        Reservation savedReservation = reservationRepository.save(reservation);
+
+        reservationEventService.notifyReservationCreated(reservation);
+
+        return savedReservation;
     }
 
     private void checkUser(Reservation reservation) {

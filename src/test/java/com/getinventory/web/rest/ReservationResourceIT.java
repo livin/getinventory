@@ -8,12 +8,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.getinventory.IntegrationTest;
+import com.getinventory.config.EmbeddedKafka;
 import com.getinventory.domain.Inventory;
 import com.getinventory.domain.Reservation;
 import com.getinventory.domain.User;
 import com.getinventory.repository.InventoryRepository;
 import com.getinventory.repository.ReservationRepository;
 import com.getinventory.repository.UserRepository;
+import com.getinventory.service.ReservationEventService;
 import jakarta.persistence.EntityManager;
 import java.time.Instant;
 import java.util.List;
@@ -22,7 +24,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.cloud.stream.binder.test.OutputDestination;
+import org.springframework.cloud.stream.binder.test.TestChannelBinderConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,6 +39,8 @@ import org.springframework.transaction.annotation.Transactional;
 @IntegrationTest
 @AutoConfigureMockMvc
 @WithMockUser
+@EmbeddedKafka
+@ImportAutoConfiguration(TestChannelBinderConfiguration.class)
 class ReservationResourceIT {
 
     private static final String DEFAULT_RESERVED_BY = "AAAAAAAAAA";
@@ -63,6 +70,9 @@ class ReservationResourceIT {
 
     @Autowired
     private MockMvc restReservationMockMvc;
+
+    @Autowired
+    private OutputDestination output;
 
     private Reservation reservation;
     private Inventory sampleInventory;
@@ -124,6 +134,9 @@ class ReservationResourceIT {
         // Validate the Reservation in the database
         List<Reservation> reservationList = reservationRepository.findAll();
         assertThat(reservationList).hasSize(databaseSizeBeforeCreate + 1);
+
+        assertThat(output.receive(1000, ReservationEventService.RESERVATIONS_KAFKA_TOPIC).getPayload())
+            .isEqualTo("{ \"event\": \"reserve\"}".getBytes());
     }
 
     @Test
