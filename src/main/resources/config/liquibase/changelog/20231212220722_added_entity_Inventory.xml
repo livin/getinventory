@@ -21,6 +21,18 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="20231212220722-1-preset-data" author="jhipster">
+        <loadData
+            file="config/liquibase/data/inventory.csv"
+            separator=";"
+            tableName="inventory"
+            usePreparedStatements="true">
+            <column name="id" type="numeric"/>
+            <column name="name" type="string"/>
+            <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
+        </loadData>
+    </changeSet>
+
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
 
     <!--
