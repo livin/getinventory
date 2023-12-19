@@ -95,7 +95,7 @@ spring:
     name: getinventory
   cloud:
     function:
-      definition: kafkaProducer
+      definition: kafkaConsumer;kafkaProducer
     stream:
       kafka:
         binder:

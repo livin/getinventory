@@ -8,4 +8,5 @@ services:
     ports:
       - 127.0.0.1:9092:9092
     environment:
-      KAFKA_REST_HOST_NAME: kafka
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://kafka:9092
+      KAFKA_ADVERTISED_HOST_NAME: kafka
