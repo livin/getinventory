@@ -1,0 +1,11 @@
+# This configuration is intended for development purpose, it's **your** responsibility to harden it for production
+name: getinventory
+services:
+  kafka:
+    image: confluentinc/confluent-local:latest
+    # If you want to expose these ports outside your dev PC,
+    # remove the "127.0.0.1:" prefix
+    ports:
+      - 127.0.0.1:9092:9092
+    environment:
+      KAFKA_REST_HOST_NAME: kafka

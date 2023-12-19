@@ -89,8 +89,26 @@ management:
           enabled: true
 
 spring:
+  autoconfigure:
+    exclude: org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration
   application:
     name: getinventory
+  cloud:
+    function:
+      definition: kafkaProducer
+    stream:
+      kafka:
+        binder:
+          replicationFactor: 1
+          auto-create-topics: true
+          brokers: localhost:9092
+      bindings:
+        reservations:
+          content-type: text/plain
+          group: getinventory
+        reservations-out-0:
+          content-type: text/plain
+          group: getinventory
   profiles:
     # The commented value for `active` can be replaced with valid Spring profiles to load.
     # Otherwise, it will be filled in by gradle when building the JAR file
