@@ -158,7 +158,7 @@ export const Reservation = () => {
                         size="sm"
                         data-cy="entityDeleteButton"
                       >
-                        <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
+                        <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Release</span>
                       </Button>
                     </div>
                   </td>
