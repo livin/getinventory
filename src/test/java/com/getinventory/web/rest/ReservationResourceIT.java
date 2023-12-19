@@ -242,6 +242,7 @@ class ReservationResourceIT {
 
     @Test
     @Transactional
+    @WithMockUser(value = JOHNTESTER_SAMPLE_LOGIN, roles = { "USER" })
     void deleteReservation() throws Exception {
         // Initialize the database
         reservationRepository.saveAndFlush(reservation);
@@ -256,5 +257,8 @@ class ReservationResourceIT {
         // Validate the database contains one less item
         List<Reservation> reservationList = reservationRepository.findAll();
         assertThat(reservationList).hasSize(databaseSizeBeforeDelete - 1);
+
+        ReservationEvent event = readEvent(output.receive(1000, ReservationEventService.RESERVATIONS_KAFKA_TOPIC));
+        assertThat(event.getEventType()).isEqualTo(ReservationEvent.EventType.RELEASE);
     }
 }

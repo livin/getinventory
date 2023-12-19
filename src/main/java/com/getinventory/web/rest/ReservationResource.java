@@ -57,11 +57,15 @@ public class ReservationResource {
         if (reservation.getId() != null) {
             throw new BadRequestAlertException("A new reservation cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        Reservation result = reservationService.createReservation(reservation);
-        return ResponseEntity
-            .created(new URI("/api/reservations/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        try {
+            Reservation result = reservationService.createReservation(reservation);
+            return ResponseEntity
+                .created(new URI("/api/reservations/" + result.getId()))
+                .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
+                .body(result);
+        } catch (IllegalStateException e) {
+            throw new BadRequestAlertException(e.getMessage(), ENTITY_NAME, "reservationerror");
+        }
     }
 
     /**

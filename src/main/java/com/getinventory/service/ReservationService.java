@@ -49,7 +49,9 @@ public class ReservationService {
 
     @Transactional
     public void deleteById(Long id) {
-        checkUser(reservationRepository.findById(id).orElseThrow());
+        Reservation reservation = reservationRepository.findById(id).orElseThrow();
+        checkUser(reservation);
         reservationRepository.deleteById(id);
+        reservationEventService.notifyReservationReleased(reservation);
     }
 }
