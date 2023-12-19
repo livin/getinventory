@@ -1,6 +1,7 @@
 package com.getinventory.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -42,6 +43,7 @@ public class Reservation implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
+    @JsonIncludeProperties(value = { "id", "login" })
     private User user;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

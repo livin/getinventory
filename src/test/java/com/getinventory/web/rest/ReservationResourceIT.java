@@ -7,16 +7,19 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.getinventory.IntegrationTest;
 import com.getinventory.config.EmbeddedKafka;
 import com.getinventory.domain.Inventory;
 import com.getinventory.domain.Reservation;
+import com.getinventory.domain.ReservationEvent;
 import com.getinventory.domain.User;
 import com.getinventory.repository.InventoryRepository;
 import com.getinventory.repository.ReservationRepository;
 import com.getinventory.repository.UserRepository;
 import com.getinventory.service.ReservationEventService;
 import jakarta.persistence.EntityManager;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Random;
@@ -29,6 +32,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.cloud.stream.binder.test.OutputDestination;
 import org.springframework.cloud.stream.binder.test.TestChannelBinderConfiguration;
 import org.springframework.http.MediaType;
+import org.springframework.messaging.Message;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,6 +77,9 @@ class ReservationResourceIT {
 
     @Autowired
     private OutputDestination output;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private Reservation reservation;
     private Inventory sampleInventory;
@@ -135,8 +142,15 @@ class ReservationResourceIT {
         List<Reservation> reservationList = reservationRepository.findAll();
         assertThat(reservationList).hasSize(databaseSizeBeforeCreate + 1);
 
-        assertThat(output.receive(1000, ReservationEventService.RESERVATIONS_KAFKA_TOPIC).getPayload())
-            .isEqualTo("{ \"event\": \"reserve\"}".getBytes());
+        ReservationEvent event = readEvent(output.receive(1000, ReservationEventService.RESERVATIONS_KAFKA_TOPIC));
+        assertThat(event.getEventType()).isEqualTo(ReservationEvent.EventType.RESERVE);
+        assertThat(event.getReservation().getInventory().getName()).isEqualTo("MacBook Pro");
+        assertThat(event.getReservation().getUser().getId()).isEqualTo(getSampleUser().getId());
+    }
+
+    private ReservationEvent readEvent(Message<byte[]> event) throws IOException {
+        assertThat(event).isNotNull();
+        return objectMapper.readValue(event.getPayload(), ReservationEvent.class);
     }
 
     @Test
