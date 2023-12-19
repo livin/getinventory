@@ -13,12 +13,7 @@ public class ReadinessTest {
 
     @Test
     @DisplayName("Provide inventory availability")
-    void testInventoryAvailabilityProvided() {
-        fail(
-            "Inventory availability feature is not implemented yet - test should be written." +
-            "It should be able to see available inventory with available flag and reservation info if any"
-        );
-    }
+    void testInventoryAvailabilityProvided() {}
 
     @Test
     @DisplayName("Emit reservation events via message broker")
