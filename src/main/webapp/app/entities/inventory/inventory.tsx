@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button, Table } from 'reactstrap';
-import { Translate, getSortState } from 'react-jhipster';
+import { Translate, getSortState, TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { ASC, DESC, SORT } from 'app/shared/util/pagination.constants';
@@ -9,6 +9,10 @@ import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntities } from './inventory.reducer';
+import { APP_DATE_FORMAT } from 'app/config/constants';
+
+import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
+import { IUser } from 'app/shared/model/user.model';
 
 export const Inventory = () => {
   const dispatch = useAppDispatch();
@@ -21,7 +25,11 @@ export const Inventory = () => {
   const inventoryList = useAppSelector(state => state.inventory.entities);
   const loading = useAppSelector(state => state.inventory.loading);
 
+  const users = useAppSelector(state => state.userManagement.users);
+
   const getAllEntities = () => {
+    dispatch(getUsers({}));
+
     dispatch(
       getEntities({
         sort: `${sortState.sort},${sortState.order}`,
@@ -63,6 +71,14 @@ export const Inventory = () => {
     }
   };
 
+  function getUser(reservation) {
+    return users.find(it => reservation.user.id === it.id);
+  }
+
+  function getUserDisplayName(user: IUser) {
+    return user.login;
+  }
+
   return (
     <div>
       <h2 id="inventory-heading" data-cy="InventoryHeading">
@@ -78,7 +94,7 @@ export const Inventory = () => {
         </div>
       </h2>
       <div className="table-responsive">
-        {inventoryList && inventoryList.length > 0 ? (
+        {inventoryList && inventoryList.length > 0 && users && users.length > 0 ? (
           <Table responsive>
             <thead>
               <tr>
@@ -87,6 +103,15 @@ export const Inventory = () => {
                 </th>
                 <th className="hand" onClick={sort('name')}>
                   Name <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
+                </th>
+                <th className="hand" onClick={sort('name')}>
+                  Available <FontAwesomeIcon icon={getSortIconByFieldName('available')} />
+                </th>
+                <th className="hand" onClick={sort('name')}>
+                  Reserved By <FontAwesomeIcon icon={getSortIconByFieldName('reservedBy')} />
+                </th>
+                <th className="hand" onClick={sort('name')}>
+                  Reserved At <FontAwesomeIcon icon={getSortIconByFieldName('reservedAt')} />
                 </th>
                 <th />
               </tr>
@@ -100,6 +125,13 @@ export const Inventory = () => {
                     </Button>
                   </td>
                   <td>{inventory.name}</td>
+                  <td>{inventory.available ? 'Yes' : 'No'}</td>
+                  <td>{inventory.reservation != null ? getUserDisplayName(getUser(inventory.reservation)) : null}</td>
+                  <td>
+                    {inventory.reservation != null ? (
+                      <TextFormat type="date" value={inventory.reservation.reservedAt} format={APP_DATE_FORMAT} />
+                    ) : null}
+                  </td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`/inventory/${inventory.id}`} color="info" size="sm" data-cy="entityDetailsButton">
