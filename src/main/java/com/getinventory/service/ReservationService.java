@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,10 +39,8 @@ public class ReservationService {
         Optional<User> currentUser = userRepository.findOneByLogin(login.get());
         if (currentUser.isEmpty()) throw new IllegalStateException("User such login doesn't exist: " + login.get());
 
-        if (!Objects.equals(currentUser.get().getId(), reservation.getUser().getId())) throw new BadRequestAlertException(
-            "Reservations can be operated only by owner",
-            "reservation",
-            "user.prohibited"
+        if (!Objects.equals(currentUser.get().getId(), reservation.getUser().getId())) throw new IllegalStateException(
+            "Reservations can be operated only by owner"
         );
     }
 
