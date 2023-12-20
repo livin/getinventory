@@ -1,95 +1,118 @@
-# getinventory
+# Get Inventory
 
-This application was generated using JHipster 8.1.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.1.0](https://www.jhipster.tech/documentation-archive/v8.1.0).
+This application allows users to book an inventory and return it.
+Each inventory can be in multiple quantity.
+Inventory availability is checked during booking - so you can only book if quantity is available.
+
+Here's how it looks:
+![](demo/inventories.png)
+
+## Requirements
+
+- Users should be able to book inventories
+- Sample inventory dataset (different phones) is provided
+- Multiple amount quantity of inventory should be support
+- Backend service should be provided
+- Functionality should be tested
+
+## Key Features and Considerations
+
+- Project is built in Java as monolithic application for MVP to have UI and authentication in place and can be
+  updated to microservice approach
+- Implemented full-stack application that has UI and user authentication
+- The solution is made to make it work and deliver broader solution rather than focused backend-only service
+  with limited functionality. Some thing are not made ideal
+- UI is not main point of implementation - but rather focused on backend service and app as whole
+- Testing is done for main use-cases as integration tests and unit tests
+- Full end-to-end tests are omitted and replaced with integration tests for main use cases
+- It needs to use JWT tokens vs default auth
+- Kafka as message broker
+- I may miss something and many things can be improved and made differently
+
+## Main Scenarios
+
+We have an inventory set defined in `inventory.csv`:
+We'll use 2 testers for main use cases: Kent and Alice.
+
+1. Kent books two phones. Availability should be updated appropriately.
+2. Alice should not be able to book phone which is not available.
+3. Alice should not be able to return other’s phone.
+4. Alice should be able to book second Samsung S8.
+5. Kent shouldn’t be able to book third Samsung S8.
+
+## What is interesting about this project?
+
+Project touches following aspects:
+
+- REST API design - how would you merge data if there would be multiple
+  microservices
+- Booking reservation availability synchonization is based on database transactions
+- How do design domain model properly
+- How user requests maps to HTTP REST API
+- Transactions are made via transaction management and transaction
+  will be declined if kafka doesn't acknowledge commit
+- Transactions with kafka can be optimized using [Transactional outbox](https://microservices.io/patterns/data/transactional-outbox.html).
+
+## What is cumbersome?
+
+- To build a simple project it needs multiple things: users,
+  authentication, UI that can be split into microservices if
+  there is a team in place
+- transactin management becomes difficult when it needs
+  to talk to external system - kafka
+
+## Diving in to project
+
+Please checkout project structure, how to run production build
+and how to run all tests in the sections below.
 
 ## Project Structure
 
-Node is required for generation and recommended for development. `package.json` is always generated for a better development experience with prettier, commit hooks, scripts and so on.
-
-In the project root, JHipster generates configuration files for tools like git, prettier, eslint, husky, and others that are well known and you can find references in the web.
+App is based on JHipster 8.1.0 which helped to scaffold skeleton and UI, you can find documentation and
+help at [https://www.jhipster.tech/documentation-archive/v8.1.0](https://www.jhipster.tech/documentation-archive/v8.1.0).
 
 `/src/*` structure follows default Java structure.
 
-- `.yo-rc.json` - Yeoman configuration file
-  JHipster configuration is stored in this file at `generator-jhipster` key. You may find `generator-jhipster-*` for specific blueprints configuration.
-- `.yo-resolve` (optional) - Yeoman conflict resolver
-  Allows to use a specific action when conflicts are found skipping prompts for files that matches a pattern. Each line should match `[pattern] [action]` with pattern been a [Minimatch](https://github.com/isaacs/minimatch#minimatch) pattern and action been one of skip (default if ommited) or force. Lines starting with `#` are considered comments and are ignored.
-- `.jhipster/*.json` - JHipster entity configuration files
-
-- `npmw` - wrapper to use locally installed npm.
-  JHipster installs Node and npm locally using the build tool by default. This wrapper makes sure npm is installed locally and uses it avoiding some differences different versions can cause. By using `./npmw` instead of the traditional `npm` you can configure a Node-less environment to develop or test your application.
 - `/src/main/docker` - Docker configurations for the application and services that the application depends on
+- `src/main/resources/config/liquibase/data/inventory.csv` - This sample phone inventory dataset that will be setup
+  upon clean install.
 
 ## Development
 
-Before you can build this project, you must install and configure the following dependencies on your machine:
+Prerequisites:
 
-1. [Node.js][]: We use Node to run a development web server and build the project.
-   Depending on your system, you can install Node either from source or as a pre-packaged bundle.
+1. [Node.js][].
+2. Java 19+.
+3. Docker (optional)
 
-After installing Node, you should be able to run the following command to install development tools.
-You will only need to run this command when dependencies change in [package.json](package.json).
-
-```
-npm install
-```
-
-We use npm scripts and [Webpack][] as our build system.
-
-Run the following commands in two separate terminals to create a blissful development experience where your browser
-auto-refreshes when files change on your hard drive.
+Run application in development:
 
 ```
-./gradlew -x webapp
-npm start
+./gradlew bootRun
 ```
 
-Npm is also used to manage CSS and JavaScript dependencies used in this application. You can upgrade dependencies by
-specifying a newer version in [package.json](package.json). You can also run `npm update` and `npm install` to manage dependencies.
-Add the `help` flag on any command to see how you can use it. For example, `npm help update`.
-
-The `npm run` command will list all of the scripts available to run for this project.
-
-### PWA Support
-
-JHipster ships with PWA (Progressive Web App) support, and it's turned off by default. One of the main components of a PWA is a service worker.
-
-The service worker initialization code is commented out by default. To enable it, uncomment the following code in `src/main/webapp/index.html`:
-
-```html
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./service-worker.js').then(function () {
-      console.log('Service Worker Registered');
-    });
-  }
-</script>
-```
-
-Note: [Workbox](https://developers.google.com/web/tools/workbox/) powers JHipster's service worker. It dynamically generates the `service-worker.js` file.
-
-### Managing dependencies
-
-For example, to add [Leaflet][] library as a runtime dependency of your application, you would run following command:
+Run kafka with docker:
 
 ```
-npm install --save --save-exact leaflet
+docker compose -f src/main/docker/kafka up
 ```
 
-To benefit from TypeScript type definitions from [DefinitelyTyped][] repository in development, you would run following command:
-
-```
-npm install --save-dev --save-exact @types/leaflet
-```
-
-Then you would import the JS and CSS files specified in library's installation instructions so that [Webpack][] knows about them:
-Note: There are still a few other things remaining to do for Leaflet that we won't detail here.
-
-For further instructions on how to develop with JHipster, have a look at [Using JHipster in development][].
+Note: when creating new reservation it may require to add `127.0.0.1 kafka` to `/etc/hosts`.
 
 ## Building for production
 
-### Packaging as jar
+### Run with Docker
+
+1. Build docker image with:
+   ```shell
+   ./gradlew -Pprod bootJar jibDockerBuild
+   ```
+2. Run application, postgres and kafka using docker compose:
+   ```shell
+   docker-compose -f src/main/docker/app.yml up
+   ```
+
+### Run as jar
 
 To build the final jar and optimize the getinventory application for production, run:
 
@@ -104,25 +127,13 @@ To ensure everything worked, run:
 java -jar build/libs/*.jar
 ```
 
+### Opening application
+
 Then navigate to [http://localhost:8080](http://localhost:8080) in your browser.
 
+Use test users (checkout main page) to login.
+
 Refer to [Using JHipster in production][] for more details.
-
-### Packaging as war
-
-To package your application as a war in order to deploy it to an application server, run:
-
-```
-./gradlew -Pprod -Pwar clean bootWar
-```
-
-### JHipster Control Center
-
-JHipster Control Center can help you manage and control your application(s). You can start a local control center server (accessible on http://localhost:7419) with:
-
-```
-docker compose -f src/main/docker/jhipster-control-center.yml up
-```
 
 ## Testing
 
