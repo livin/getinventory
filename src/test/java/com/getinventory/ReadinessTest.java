@@ -1,7 +1,5 @@
 package com.getinventory;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +26,5 @@ public class ReadinessTest {
     @Test
     @DisplayName("Publish project on GitHub")
     @Disabled
-    void publishOnGithub() {
-        fail("Publish on github");
-    }
+    void publishOnGithub() {}
 }
