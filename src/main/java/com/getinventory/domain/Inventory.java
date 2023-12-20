@@ -42,7 +42,6 @@ public class Inventory implements Serializable {
     private Integer quantity;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "inventory")
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "inventory" }, allowSetters = true)
     private Set<Reservation> reservations = new HashSet<>();
 
@@ -75,7 +74,7 @@ public class Inventory implements Serializable {
 
     @JsonProperty("available")
     boolean isAvailable() {
-        return getReservations().isEmpty();
+        return getReservations().size() < getQuantity();
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
