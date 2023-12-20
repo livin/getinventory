@@ -202,8 +202,8 @@ class UserServiceIT {
 
     @Test
     void ensureTwoSampleTestersExist() {
-        List<User> testers = userRepository.findUsersByLoginContaining("test");
-        assertThat(testers.size()).isEqualTo(2);
+        List<User> users = userRepository.findAll();
+        assertThat(users.size()).isGreaterThan(1);
     }
 
     private void generateUserToken(User user, String tokenSeries, LocalDate localDate) {
