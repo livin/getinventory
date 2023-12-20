@@ -12,7 +12,7 @@ import { getEntities } from './inventory.reducer';
 import { APP_DATE_FORMAT } from 'app/config/constants';
 
 import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
-import { IUser } from 'app/shared/model/user.model';
+import { IUser, userDisplayName } from 'app/shared/model/user.model';
 
 export const Inventory = () => {
   const dispatch = useAppDispatch();
@@ -71,12 +71,8 @@ export const Inventory = () => {
     }
   };
 
-  function getUser(reservation) {
-    return users.find(it => reservation.user.id === it.id);
-  }
-
-  function getUserDisplayName(user: IUser) {
-    return user.login;
+  function getUser(reservation): IUser {
+    return users.find(it => reservation.user.id === it.id) as IUser;
   }
 
   return (
@@ -134,7 +130,7 @@ export const Inventory = () => {
                   <td>
                     {inventory.reservations
                       ? inventory.reservations.map((reservation, ri) => (
-                          <div id={`reservation-${ri}-user`}>{getUserDisplayName(getUser(reservation))}</div>
+                          <div id={`reservation-${ri}-user`}>{userDisplayName(getUser(reservation))}</div>
                         ))
                       : null}
                   </td>

@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { IInventory } from 'app/shared/model/inventory.model';
 import { getEntities as getInventories } from 'app/entities/inventory/inventory.reducer';
 import { IUser } from 'app/shared/model/user.model';
+import { userDisplayName } from 'app/shared/model/user.model';
 import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
 import { IReservation } from 'app/shared/model/reservation.model';
 import { getEntity, updateEntity, createEntity, reset } from './reservation.reducer';
@@ -123,7 +124,7 @@ export const ReservationUpdate = () => {
                 {users
                   ? users.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.login}
+                        {userDisplayName(otherEntity)}
                       </option>
                     ))
                   : null}

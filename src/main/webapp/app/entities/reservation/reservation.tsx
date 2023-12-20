@@ -13,7 +13,7 @@ import { getEntities } from './reservation.reducer';
 import { getEntities as getInventories } from './../inventory/inventory.reducer';
 import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
 import { IInventory } from 'app/shared/model/inventory.model';
-import { IUser } from 'app/shared/model/user.model';
+import { IUser, userDisplayName } from 'app/shared/model/user.model';
 
 export const Reservation = () => {
   const dispatch = useAppDispatch();
@@ -86,11 +86,6 @@ export const Reservation = () => {
   function getUser(reservation) {
     return users.find(it => reservation.user.id === it.id);
   }
-
-  function getUserDisplayName(user: IUser) {
-    return user.login;
-  }
-
   return (
     <div>
       <h2 id="reservation-heading" data-cy="ReservationHeading">
@@ -143,7 +138,7 @@ export const Reservation = () => {
                       ''
                     )}
                   </td>
-                  <td>{reservation.user ? getUserDisplayName(getUser(reservation)) : ''}</td>
+                  <td>{reservation.user ? userDisplayName(getUser(reservation)) : ''}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`/reservation/${reservation.id}`} color="info" size="sm" data-cy="entityDetailsButton">

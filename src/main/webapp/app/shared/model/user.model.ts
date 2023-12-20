@@ -14,6 +14,14 @@ export interface IUser {
   password?: string;
 }
 
+export function userDisplayName(user: IUser): string {
+  if (!user) return '';
+
+  if (user.firstName || user.lastName) return `${user.firstName} ${user.lastName}`;
+
+  return user.login ? user.login : user.id;
+}
+
 export const defaultValue: Readonly<IUser> = {
   id: '',
   login: '',
