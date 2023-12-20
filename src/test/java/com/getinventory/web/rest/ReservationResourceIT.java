@@ -10,10 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.getinventory.IntegrationTest;
 import com.getinventory.config.EmbeddedKafka;
-import com.getinventory.domain.Inventory;
-import com.getinventory.domain.Reservation;
-import com.getinventory.domain.ReservationEvent;
-import com.getinventory.domain.User;
+import com.getinventory.domain.*;
 import com.getinventory.repository.InventoryRepository;
 import com.getinventory.repository.ReservationRepository;
 import com.getinventory.repository.UserRepository;
@@ -23,6 +20,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -83,6 +81,7 @@ class ReservationResourceIT {
 
     private Reservation reservation;
     private Inventory sampleInventory;
+    private User sampleUser;
 
     /**
      * Create an entity for this test.
@@ -91,25 +90,29 @@ class ReservationResourceIT {
      * if they test an entity which requires the current entity.
      */
     public Reservation createEntity(EntityManager em) {
-        Reservation reservation = Reservation
-            .builder()
-            .inventory(sampleInventory)
-            .user(getSampleUser())
-            .reservedAt(DEFAULT_RESERVED_AT)
-            .build();
+        Reservation reservation = Reservation.builder().inventory(sampleInventory).user(sampleUser).reservedAt(DEFAULT_RESERVED_AT).build();
         return reservation;
     }
 
     private Inventory createSampleInventory() {
-        return Inventory.builder().id(1005L).name("MacBook Pro").build();
+        return Inventory.builder().id(1005L).name("MacBook Pro").quantity(1).build();
     }
 
-    private static User getSampleUser() {
-        return User.builder().id(2L).login("johntester").build();
+    private static User createSampleUser(String login) {
+        return User
+            .builder()
+            .login(login)
+            .firstName(login)
+            .lastName("Tester")
+            .password("$2a$10$b3YwEEnK4Iv5CMysDrn2b.CQDwPxxkAYTIFbAarPPZjWeQaVJj123")
+            .activated(true)
+            .authorities(Set.of(Authority.builder().name("ROLE_USER").build()))
+            .build();
     }
 
     @BeforeEach
     public void initTest() {
+        sampleUser = userRepository.save(createSampleUser(JOHNTESTER_SAMPLE_LOGIN));
         sampleInventory = inventoryRepository.saveAndFlush(createSampleInventory());
         reservation = createEntity(em);
     }
@@ -136,7 +139,7 @@ class ReservationResourceIT {
             .andExpect(jsonPath("$.id").value(notNullValue()))
             .andExpect(jsonPath("$.reservedAt").value(notNullValue()))
             .andExpect(jsonPath("$.inventory.id").value(sampleInventory.getId()))
-            .andExpect(jsonPath("$.user.id").value(getSampleUser().getId()));
+            .andExpect(jsonPath("$.user.id").value(sampleUser.getId()));
 
         // Validate the Reservation in the database
         List<Reservation> reservationList = reservationRepository.findAll();
@@ -145,7 +148,7 @@ class ReservationResourceIT {
         ReservationEvent event = readEvent(output.receive(1000, ReservationEventService.RESERVATIONS_KAFKA_TOPIC));
         assertThat(event.getEventType()).isEqualTo(ReservationEvent.EventType.RESERVE);
         assertThat(event.getReservation().getInventory().getName()).isEqualTo("MacBook Pro");
-        assertThat(event.getReservation().getUser().getId()).isEqualTo(getSampleUser().getId());
+        assertThat(event.getReservation().getUser().getId()).isEqualTo(sampleUser.getId());
     }
 
     private ReservationEvent readEvent(Message<byte[]> event) throws IOException {
@@ -157,7 +160,7 @@ class ReservationResourceIT {
     @Transactional
     @WithMockUser(username = JOHNTESTER_SAMPLE_LOGIN, roles = { "USER" })
     void createReservation_forAnotherUser_prohibited() throws Exception {
-        User anotherTester = userRepository.findOneByLogin(JULIETESTER_SAMPLE_LOGIN).get();
+        User anotherTester = userRepository.save(createSampleUser(JULIETESTER_SAMPLE_LOGIN));
 
         // tester attempts to reserve for anothertester
         Reservation reservationForAnotherUser = Reservation

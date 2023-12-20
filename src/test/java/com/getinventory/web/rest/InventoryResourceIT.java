@@ -58,7 +58,7 @@ class InventoryResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Inventory createEntity(EntityManager em) {
-        Inventory inventory = new Inventory().name(DEFAULT_NAME);
+        Inventory inventory = Inventory.builder().name(DEFAULT_NAME).quantity(1).build();
         return inventory;
     }
 
@@ -301,7 +301,7 @@ class InventoryResourceIT {
         // Update the inventory using partial update
         Inventory partialUpdatedInventory = new Inventory();
         partialUpdatedInventory.setId(inventory.getId());
-
+        partialUpdatedInventory.setQuantity(1);
         partialUpdatedInventory.name(UPDATED_NAME);
 
         restInventoryMockMvc
@@ -331,7 +331,7 @@ class InventoryResourceIT {
         // Update the inventory using partial update
         Inventory partialUpdatedInventory = new Inventory();
         partialUpdatedInventory.setId(inventory.getId());
-
+        partialUpdatedInventory.setQuantity(1);
         partialUpdatedInventory.name(UPDATED_NAME);
 
         restInventoryMockMvc
