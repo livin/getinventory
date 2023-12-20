@@ -1,24 +1,19 @@
 package com.getinventory.domain;
 
-import java.time.Instant;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Set;
 
 public class InventoryTestSamples {
 
-    private static final Random random = new Random();
-    private static final AtomicLong longCount = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
-
     public static Inventory getInventorySample() {
-        return new Inventory().id(1L).name("name1");
+        return Inventory.builder().id(1L).name("name1").quantity(1).build();
     }
 
     public static Inventory getReservedInventorySample() {
-        return new Inventory().id(2L).name("name2");
-    }
+        var inventory = Inventory.builder().id(2L).name("name2").quantity(1).build();
 
-    public static Inventory getInventoryRandomSampleGenerator() {
-        return new Inventory().id(longCount.incrementAndGet()).name(UUID.randomUUID().toString());
+        Reservation reservation = Reservation.builder().inventory(inventory).user(User.builder().id(2L).build()).build();
+
+        inventory.reservations(Set.of(reservation));
+        return inventory;
     }
 }

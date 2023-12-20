@@ -43,6 +43,7 @@ public class Inventory implements Serializable {
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "inventory")
     @JsonIgnoreProperties(value = { "inventory" }, allowSetters = true)
+    @Builder.Default
     private Set<Reservation> reservations = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
