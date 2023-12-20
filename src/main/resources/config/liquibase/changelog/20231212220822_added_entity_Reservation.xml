@@ -45,7 +45,8 @@
                   tableName="reservation"
                   usePreparedStatements="true">
             <column name="id" type="numeric"/>
-            <column name="reserved_at" type="date"/>
+            <column name="inventory_id" type="numeric"/>
+            <column name="user_id" type="numeric"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>
