@@ -1,5 +1,6 @@
 entity Inventory {
     name String required
+    quantity Integer required
 }
 
 entity Reservation {

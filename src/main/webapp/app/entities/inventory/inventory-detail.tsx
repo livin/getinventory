@@ -31,6 +31,10 @@ export const InventoryDetail = () => {
             <span id="name">Name</span>
           </dt>
           <dd>{inventoryEntity.name}</dd>
+          <dt>
+            <span id="quantity">Quantity</span>
+          </dt>
+          <dd>{inventoryEntity.quantity}</dd>
         </dl>
         <Button tag={Link} to="/inventory" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Back</span>

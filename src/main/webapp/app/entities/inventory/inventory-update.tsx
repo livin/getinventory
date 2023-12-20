@@ -52,6 +52,9 @@ export const InventoryUpdate = () => {
     if (values.id !== undefined && typeof values.id !== 'number') {
       values.id = Number(values.id);
     }
+    if (values.quantity !== undefined && typeof values.quantity !== 'number') {
+      values.quantity = Number(values.quantity);
+    }
 
     const entity = {
       ...inventoryEntity,
@@ -96,6 +99,17 @@ export const InventoryUpdate = () => {
                 type="text"
                 validate={{
                   required: { value: true, message: 'This field is required.' },
+                }}
+              />
+              <ValidatedField
+                label="Quantity"
+                id="inventory-quantity"
+                name="quantity"
+                data-cy="quantity"
+                type="text"
+                validate={{
+                  required: { value: true, message: 'This field is required.' },
+                  validate: v => isNumber(v) || 'This field should be a number.',
                 }}
               />
               <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/inventory" replace color="info">

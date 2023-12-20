@@ -15,12 +15,7 @@ public class InventoryTestSamples {
     }
 
     public static Inventory getReservedInventorySample() {
-        return new Inventory()
-            .id(2L)
-            .name("name2")
-            .reservation(
-                Reservation.builder().id(110L).reservedAt(Instant.now()).user(User.builder().id(1L).login("tester").build()).build()
-            );
+        return new Inventory().id(2L).name("name2");
     }
 
     public static Inventory getInventoryRandomSampleGenerator() {

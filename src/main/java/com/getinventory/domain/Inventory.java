@@ -37,6 +37,10 @@ public class Inventory implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @NotNull
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "inventory")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "inventory" }, allowSetters = true)
@@ -99,6 +103,7 @@ public class Inventory implements Serializable {
         return "Inventory{" +
             "id=" + getId() +
             ", name='" + getName() + "'" +
+            ", quantity=" + getQuantity() +
             "}";
     }
 }

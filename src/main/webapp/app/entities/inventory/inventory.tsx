@@ -104,6 +104,9 @@ export const Inventory = () => {
                 <th className="hand" onClick={sort('name')}>
                   Name <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
                 </th>
+                <th className="hand" onClick={sort('quantity')}>
+                  Quantity <FontAwesomeIcon icon={getSortIconByFieldName('quantity')} />
+                </th>
                 <th className="hand" onClick={sort('name')}>
                   Available <FontAwesomeIcon icon={getSortIconByFieldName('available')} />
                 </th>
@@ -125,6 +128,7 @@ export const Inventory = () => {
                     </Button>
                   </td>
                   <td>{inventory.name}</td>
+                  <td>{inventory.quantity}</td>
                   <td>{inventory.available ? 'Yes' : 'No'}</td>
 
                   <td>
