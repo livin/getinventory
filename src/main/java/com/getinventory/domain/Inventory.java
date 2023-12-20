@@ -73,7 +73,7 @@ public class Inventory implements Serializable {
     }
 
     @JsonProperty("available")
-    boolean isAvailable() {
+    public boolean isAvailable() {
         return getReservations().size() < getQuantity();
     }
 

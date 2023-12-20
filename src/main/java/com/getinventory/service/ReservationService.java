@@ -1,7 +1,9 @@
 package com.getinventory.service;
 
+import com.getinventory.domain.Inventory;
 import com.getinventory.domain.Reservation;
 import com.getinventory.domain.User;
+import com.getinventory.repository.InventoryRepository;
 import com.getinventory.repository.ReservationRepository;
 import com.getinventory.repository.UserRepository;
 import com.getinventory.security.SecurityUtils;
@@ -10,6 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -18,11 +21,13 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
+    private final InventoryRepository inventoryRepository;
     private final ReservationEventService reservationEventService;
 
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public Reservation createReservation(Reservation reservation) {
         checkUser(reservation);
+        checkAvailability(reservation.getInventory().getId());
 
         reservation.setReservedAt(Instant.now());
 
@@ -31,6 +36,13 @@ public class ReservationService {
         reservationEventService.notifyReservationCreated(reservation);
 
         return savedReservation;
+    }
+
+    private void checkAvailability(Long inventoryId) {
+        Optional<Inventory> inventory = inventoryRepository.findById(inventoryId);
+        if (inventory.isEmpty()) throw new IllegalStateException("Inventory not found with id: " + inventoryId);
+
+        if (!inventory.get().isAvailable()) throw new IllegalStateException("Inventory is out of stock");
     }
 
     private void checkUser(Reservation reservation) {
