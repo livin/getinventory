@@ -45,7 +45,7 @@ export const ReservationDeleteDialog = () => {
         Confirm delete operation
       </ModalHeader>
       <ModalBody id="getinventoryApp.reservation.delete.question">
-        Are you sure you want to release reservation {reservationEntity.id} for this inventory?
+        Are you sure you want to return the inventory and close reservation {reservationEntity.id}?
       </ModalBody>
       <ModalFooter>
         <Button color="secondary" onClick={handleClose}>
@@ -54,7 +54,7 @@ export const ReservationDeleteDialog = () => {
         </Button>
         <Button id="jhi-confirm-delete-reservation" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
           <FontAwesomeIcon icon="trash" />
-          &nbsp; Delete
+          &nbsp; Return
         </Button>
       </ModalFooter>
     </Modal>
