@@ -31,8 +31,10 @@ export const Home = () => {
                 sign in
               </Link>
               , you can try the default accounts:
-              <br />- Administrator (login=&quot;admin&quot; and password=&quot;admin&quot;) <br />- User (login=&quot;user&quot; and
-              password=&quot;user&quot;).
+              <br />
+              - Administrator (login=&quot;admin&quot; and password=&quot;admin&quot;) <br />
+              - Kent Kotlin sample tester (login=&quot;kentkotlin&quot; and password=&quot;1234&quot;) <br />
+              - Alice Java sample tester (login=&quot;alicejava&quot; and password=&quot;1234&quot;) <br />.
             </Alert>
 
             <Alert color="warning">
