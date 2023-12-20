@@ -12,6 +12,14 @@
     }
   ],
   "name": "Inventory",
-  "relationships": [],
+  "relationships": [
+    {
+      "otherEntityName": "reservation",
+      "otherEntityRelationshipName": "inventory",
+      "relationshipName": "reservation",
+      "relationshipSide": "right",
+      "relationshipType": "one-to-many"
+    }
+  ],
   "searchEngine": "no"
 }

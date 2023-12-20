@@ -126,12 +126,25 @@ export const Inventory = () => {
                   </td>
                   <td>{inventory.name}</td>
                   <td>{inventory.available ? 'Yes' : 'No'}</td>
-                  <td>{inventory.reservation != null ? getUserDisplayName(getUser(inventory.reservation)) : null}</td>
+
                   <td>
-                    {inventory.reservation != null ? (
-                      <TextFormat type="date" value={inventory.reservation.reservedAt} format={APP_DATE_FORMAT} />
-                    ) : null}
+                    {inventory.reservations
+                      ? inventory.reservations.map((reservation, ri) => (
+                          <div id={`reservation-${ri}-user`}>{getUserDisplayName(getUser(reservation))}</div>
+                        ))
+                      : null}
                   </td>
+
+                  <td>
+                    {inventory.reservations
+                      ? inventory.reservations.map((reservation, ri) => (
+                          <div id={`reservation-${ri}-reservedat`}>
+                            <TextFormat type="date" value={reservation.reservedAt} format={APP_DATE_FORMAT} />
+                          </div>
+                        ))
+                      : null}
+                  </td>
+
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`/inventory/${inventory.id}`} color="info" size="sm" data-cy="entityDetailsButton">

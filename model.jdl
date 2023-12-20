@@ -3,10 +3,13 @@ entity Inventory {
 }
 
 entity Reservation {
-    reservedBy String required
     reservedAt Instant
 }
 
-relationship OneToOne {
-    Reservation{inventory} to Inventory
+relationship ManyToOne {
+    Reservation{inventory} to Inventory{reservation}
+}
+
+relationship ManyToOne {
+    Reservation{user} to User with builtInEntity
 }

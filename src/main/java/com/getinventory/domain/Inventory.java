@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -13,6 +15,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
  * A Inventory.
  */
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,21 +27,20 @@ public class Inventory implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
     @Column(name = "id")
     private Long id;
 
-    @Setter
     @NotNull
     @Column(name = "name", nullable = false)
     private String name;
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "inventory")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "inventory" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "inventory")
-    private Reservation reservation;
+    private Set<Reservation> reservations = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -52,24 +54,24 @@ public class Inventory implements Serializable {
         return this;
     }
 
-    public void setReservation(Reservation reservation) {
-        if (this.reservation != null) {
-            this.reservation.setInventory(null);
+    public void setReservations(Set<Reservation> reservations) {
+        if (this.reservations != null) {
+            this.reservations.forEach(i -> i.setInventory(null));
         }
-        if (reservation != null) {
-            reservation.setInventory(this);
+        if (reservations != null) {
+            reservations.forEach(i -> i.setInventory(this));
         }
-        this.reservation = reservation;
+        this.reservations = reservations;
     }
 
-    public Inventory reservation(Reservation reservation) {
-        this.setReservation(reservation);
+    public Inventory reservations(Set<Reservation> reservations) {
+        this.setReservations(reservations);
         return this;
     }
 
     @JsonProperty("available")
     boolean isAvailable() {
-        return getReservation() == null;
+        return getReservations().isEmpty();
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here

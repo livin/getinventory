@@ -6,11 +6,6 @@
   "entityTableName": "reservation",
   "fields": [
     {
-      "fieldName": "reservedBy",
-      "fieldType": "String",
-      "fieldValidateRules": ["required"]
-    },
-    {
       "fieldName": "reservedAt",
       "fieldType": "Instant"
     }
@@ -19,18 +14,17 @@
   "relationships": [
     {
       "otherEntityName": "inventory",
+      "otherEntityRelationshipName": "reservation",
       "relationshipName": "inventory",
       "relationshipSide": "left",
-      "relationshipType": "one-to-one"
+      "relationshipType": "many-to-one"
     },
     {
-      "id": false,
-      "otherEntityField": "id",
       "otherEntityName": "user",
-      "otherEntityRelationshipName": "reservation",
       "relationshipName": "user",
       "relationshipSide": "left",
-      "relationshipType": "many-to-one"
+      "relationshipType": "many-to-one",
+      "relationshipWithBuiltInEntity": true
     }
   ],
   "searchEngine": "no"

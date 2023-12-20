@@ -35,9 +35,8 @@ public class Reservation implements Serializable {
     @Column(name = "reserved_at")
     private Instant reservedAt;
 
-    @JsonIgnoreProperties(value = { "reservation" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(unique = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "reservations" }, allowSetters = true)
     @NotNull
     private Inventory inventory;
 
