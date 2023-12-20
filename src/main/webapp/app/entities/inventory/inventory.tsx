@@ -130,7 +130,7 @@ export const Inventory = () => {
                   <td>
                     {inventory.reservations
                       ? inventory.reservations.map((reservation, ri) => (
-                          <div id={`reservation-${ri}-user`}>{userDisplayName(getUser(reservation))}</div>
+                          <div key={`reservation-${ri}-user`}>{userDisplayName(getUser(reservation))}</div>
                         ))
                       : null}
                   </td>
@@ -138,7 +138,7 @@ export const Inventory = () => {
                   <td>
                     {inventory.reservations
                       ? inventory.reservations.map((reservation, ri) => (
-                          <div id={`reservation-${ri}-reservedat`}>
+                          <div key={`reservation-${ri}-reservedat`}>
                             <TextFormat type="date" value={reservation.reservedAt} format={APP_DATE_FORMAT} />
                           </div>
                         ))
